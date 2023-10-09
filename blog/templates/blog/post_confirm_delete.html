@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+<link href="{% static 'css/detail.css' %}" rel="stylesheet">
+
+<div class="container contact-form article-comment">
+    <h4>Delete Post</h4>
+    <form id="contact-form" method="POST" action="">
+        {% csrf_token %}
+        <div class="row">
+        <p>Are you sure you want to delete "<strong>{{post}}</strong>"?</p>
+        <input type="submit" class="btn btn-danger btn-sm mt-1 mb-1" value="Yes,I'm Sure">
+    </form>
+        <a href="{% url 'post' post.id %}" ><button class="btn btn-info btn-sm mt-1 mb-1">No, take me back</button></a>
+        </div>    
+    
+</div>
+
+{% endblock content %}

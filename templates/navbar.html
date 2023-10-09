@@ -1,0 +1,26 @@
+{% load static %}
+
+<link href="{% static 'css/blog.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/profile_page.css' %}">
+
+
+<header class="border-bottom lh-1 py-3">
+    <div class="row flex-nowrap justify-content-between align-items-center">
+      <div class="col-4 pt-1">
+        <a href="{% url 'profile' user %}" ><img src="{{user.profile.avatar.url}}" class="me-2 avatar-sm rounded-circle" ><a class="link-secondary fst-italic" style="font-size: 1.5rem; text-decoration: none; color: #000 !important;" href="{% url 'profile' request.user %}">{% if user.profile.name %} {{user.profile.name}} {% else %}@{{request.user.username}} {% endif %}</a>
+      </div>
+      <div class="col-4 text-center">
+        <a class="blog-header-logo text-body-emphasis text-decoration-none" href="#">Blogger</a>
+      </div>
+      <div class="col-4 d-flex justify-content-end align-items-center">
+        <a class="link-secondary" href="{% url 'search' %}" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="mx-3" role="img" viewBox="0 0 24 24"><title>Search</title><circle cx="10.5" cy="10.5" r="7.5"/><path d="M21 21l-5.2-5.2"/></svg>
+        </a>
+        {% if request.user.is_authenticated %}
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}">Logout</a>
+        {% else %}
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'login' %}">Login</a>
+        {% endif %}
+      </div>
+    </div>
+ <hr>

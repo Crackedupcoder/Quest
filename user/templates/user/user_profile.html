@@ -1,0 +1,225 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+
+<link rel="stylesheet" href="{% static 'css/profile_page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+
+<div class="container">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-xl-5">
+            <!-- profile card -->
+            <div class="card">
+                <div class="card-body"> 
+                    <div class="d-flex align-items-start">
+                        <img src="{{profile.avatar.url}}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
+                        <div class="w-100 ms-3">
+                            <h4 class="my-0">{{profile.name}} {% if profile.user.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}</h4>
+                            <p class="text-muted">@{{profile.user.username}}</p>
+						
+							{% if user_profile == request.user  %}
+                            <a href="{% url 'setting' %}"><button  type="button" class="btn btn-sm btn-dark waves-effect waves-light">Edit Profile</button></a> <a href="{% url 'post-create' %}"><button type="button" class="btn btn-sm btn-dark waves-effect waves-light">Create Post</button></a>
+							
+                            {% elif is_following  %}
+                            <form action="{% url 'unfollowuser' user_profile %}" method="POST">
+                                {% csrf_token %}
+							    <button type="submit" class="btn btn-sm btn-dark waves-effect waves-light">Unfollow</button>
+                            </form>
+
+                            {% else %}
+                            <form action="{% url 'followuser' user_profile %}" method="POST">
+                                {% csrf_token %}
+							    <button type="submit" class="btn btn-sm btn-dark waves-effect waves-light">follow</button>
+							    {% endif %}
+						    </form>
+                        </div>
+                    </div>
+
+                    <!-- profile info  -->
+                    <div class="mt-3">
+                        {% if profile.bio %}
+                        <h4 class="font-13 text-uppercase">About Me :</h4>
+                        <p class="text-muted font-13 mb-3">
+                            {{profile.bio|truncatechars:100}}
+                        </p>
+                        {% endif %}
+
+                        {% if profile.name %}
+                        <p class="text-muted mb-2 font-13"><strong>Full Name :</strong> <span class="ms-2">{{profile.name}}</span></p>
+                        {% endif %}
+
+                        {% if profile.profession %}
+                        <p class="text-muted mb-2 font-13"><strong>Profession :</strong><span class="ms-2">{{profile.profession}}</span></p>
+                        {% endif %}
+
+                        <p class="text-muted mb-2 font-13"><strong>Email :</strong> <span class="ms-2">{{profile.user.email}}</span></p>
+                        {% if profile.location %}
+                        <p class="text-muted mb-1 font-13"><strong>Location :</strong> <span class="ms-2">{{profile.location}}</span></p>
+                        {% endif %}
+                    </div> 
+                    <!-- end profile info -->
+                </div>                                 
+            </div> 
+            <!-- end profile card -->
+
+            <!-- counts -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-4 border-end border-light">
+                            <h5 class="text-muted mt-1 mb-2 fw-normal">{% if post_count == 1%} Post {% else %} Posts {% endif %}</h5>
+                            <h2 class="mb-0 fw-bold">{{post_count}}</h2>
+                        </div>
+                        <div class="col-4 border-end border-light">
+                            <h5 class="text-muted mt-1 mb-2 fw-normal">{% if number_of_followers == 1 %} follower {% else %} followers {% endif %}</h5>
+                            <h2 class="mb-0 fw-bold">{{number_of_followers}}</h2>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="text-muted mt-1 mb-2 fw-normal">{% if following == 1 %} following {% else %} followings {% endif %}</h5>
+                            <h2 class="mb-0 fw-bold">{{following}}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end counts -->
+
+            <!-- followers list -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">Followers <i class="mdi mdi-account-multiple ms-1"></i></h4>
+                    <div class="list-group">
+                        {% for follower in followers_list %}
+                        <a href="{% url 'profile' follower %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                                <img src="{{follower.profile.avatar.url}}" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                                <div class="w-100 ms-2">
+                                    <h5 class="mb-1">{{follower.profile.name}} {% if follower.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}</h5>
+                                    <p class="mb-0 font-13 text-muted">{{follower.profile.bio}}</p>
+                                </div>
+                                <i class="mdi mdi-chevron-right h2"></i>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <!-- see more -->
+                    {% if number_of_followers > 5 %}
+                    <div class="list-group">
+                        <a href="{% url 'followers' profile.user %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                                <div class="w-100 ms-2">
+                                    <h5 class="mb-1">See All Followers</h5>
+                                </div>
+                                <i class="mdi mdi-chevron-right h2"></i>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    <!-- end -->
+                </div>
+            </div> 
+            <!-- end followers list -->
+
+            <!-- followings list -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">Followings <i class="mdi mdi-account-multiple ms-1"></i></h4>
+                    <div class="list-group">
+                        {% for follower in following_list %}
+                        <a href="{% url 'profile' follower %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                                <img src="{{follower.profile.avatar.url}}" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                                <div class="w-100 ms-2">
+                                    <h5 class="mb-1">{{follower.profile.name}} {% if follower.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}</h5>
+                                    <p class="mb-0 font-13 text-muted">{{follower.profile.bio}}</p>
+                                </div>
+                                <i class="mdi mdi-chevron-right h2"></i>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <!-- see more -->
+                    {% if following > 5 %}
+                    <div class="list-group">
+                        <a href="{% url 'following' profile.user %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                                <div class="w-100 ms-2">
+                                    <h5 class="mb-1">See All Followings</h5>
+                                </div>
+                                <i class="mdi mdi-chevron-right h2"></i>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    <!-- end -->
+                </div>
+            </div>
+            <!-- end followings list -->
+        </div> 
+        <!-- end left col-->
+
+        <!-- right column -->
+        <div class="col-xl-7">
+             <!-- Profile user post list-->
+            <div class="card">
+					{% for post in posts %}
+                    <div class="border border-light p-2 mb-3">
+                        <div class="d-flex align-items-start">
+                            <img class="me-2 avatar-sm rounded-circle" src="{{post.author.profile.avatar.url}}" alt="Generic placeholder image">
+                            <div class="w-100">
+                                <h5 class="m-0">@{{post.author}}</h5>
+                                <p class="text-muted"><small>{{post.created|timesince}} ago</small></p>
+                            </div>
+                        </div>
+                        <a href="{% url 'post' post.id %}" style="text-decoration: none; color: black;"><h4>{{post.title}}</h4></a>
+
+                        <img src="{{post.image.url}}" height="100" width="200" class="img-fluid border-0">
+                    </div>
+                    
+                    <!-- current logged in user comment -->
+                    {% if comments %}
+                    <div class="d-flex align-items-start">
+                        <div class="w-100">
+                            <div class="d-flex align-items-start mt-3">
+                                <a class="pe-2" href="{% url 'profile' user %}">
+                                    <img src="{{comments.user.profile.avatar.url}}" class="avatar-sm rounded-circle me-2" alt="Generic placeholder image">
+                                </a>
+                                <div class="w-100">
+                                    <h5 class="mt-0"><small>@</small>{{comments.user}} <small class="text-muted">5 hours ago</small></h5>
+                                   {{comments.body}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!-- end  -->
+
+                    <!-- add comment to post -->
+                    <div class="d-flex align-items-start mt-2">
+                            <a class="pe-2" href="{% url 'profile' user %}">
+                                <img src="{{user.profile.avatar.url}}" class="rounded-circle" alt="Generic placeholder image" height="31">
+                            </a>
+                        <form action="{% url 'post' post.id %}" method="POST"> 
+                            {% csrf_token %}
+                            <div class="w-100">
+                                <input name="body" type="text" id="simpleinput" class="form-control border-0 form-control-sm" placeholder="Add comment">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- end comment to post -->
+                    <div class="text-center">
+                        <a href="{% url 'post' post.id %}" class="text-body-emphasis fw-bold" style="color: black;">Read Post</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div> 
+            <!-- end profile user post list -->
+        </div>
+         <!-- end  right col -->
+    </div>
+</div>
+
+
+{% endblock content %}

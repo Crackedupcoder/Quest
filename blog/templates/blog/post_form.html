@@ -1,0 +1,61 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+
+<link href="{% static 'css/detail.css' %}" rel="stylesheet">
+
+<div class="container contact-form article-comment">
+    <h4>Create/Update Post</h4>
+    {% include 'message.html' %}
+
+    <!-- post create form -->
+    <form id="contact-form" method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input value="{{post.title}}" type="text" name="title" placeholder="Title" class="form-control" required>
+                </div>
+            </div><br>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input  type="file" name="image" placeholder="Image" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input value="{{post.category}}" type="text" name="category" placeholder="Category" class="form-control" required>
+                </div>
+            </div><br>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <textarea name="content" id="content" placeholder="Your message *" rows="4" class="form-control" required>{{post.content}}</textarea>
+                </div>
+            </div>
+            
+            <div class="col-md-12">
+                <div class="send">
+                    <button type="submit" class="px-btn theme"><span>Submit</span> <i class="arrow"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- end -->
+</div>
+    
+
+<link href="{% static 'ckeditor/ckeditor.css' %}" media="all" rel="stylesheet">
+<script src="{% static 'ckeditor/ckeditor-init.js' %}" data-ckeditor-basepath="/static/ckeditor/ckeditor/" id="ckeditor-init-script"></script>
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script>
+    CKEDITOR.replace('content',{
+        height:1000,
+    }); 
+</script>
+
+{% endblock content %}
