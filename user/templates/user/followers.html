@@ -1,0 +1,32 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+
+<link rel="stylesheet" href="{% static 'css/profile_page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+
+
+<div class="container card">
+    <div class="card-body">
+        <h4 class="header-title mb-3">Followings <i class="mdi mdi-account-multiple ms-1"></i></h4>
+        <div class="list-group">
+            {% for follower in followers %}
+            <a href="{% url 'profile' follower %}" class="list-group-item list-group-item-action">
+                <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                    <img src="{{follower.profile.avatar.url}}" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                    <div class="w-100 ms-2">
+                        <h5 class="mb-1">{{follower.profile.name}} {% if follower.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}</h5>
+                        <p class="mb-0 font-13 text-muted">{{follower.profile.bio}}</p>
+                    </div>
+                    <i class="mdi mdi-chevron-right h2"></i>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

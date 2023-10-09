@@ -1,0 +1,161 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+
+<link href="{% static 'css/detail.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/profile_page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+
+
+<div class="blog-single gray-bg">
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-lg-8 m-15px-tb">
+                <article class="article">
+                    <div class="article-img">
+                        <img src="{{object.image.url}}" title="" alt="">
+                    </div>
+                    <div class="article-title">
+                        <h6><a href="{% url 'category' object.category.id %}">{{object.category}}</a></h6>
+                        <h2 class="display-4 fst-italic">{{object.title}}</h2>
+                        <div class="media">
+                            <div class="avatar">
+                                <a href="{% url 'profile' object.author %}"><img src="{{object.author.profile.avatar.url}}" title="" alt=""></a>
+                            </div>
+                            <div class="media-body">
+                                <label>{{object.author}}</label>{% if object.author.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}
+                                <span>{{object.created}}</span>
+                                {% if object.author == user %}
+                                <a href="{% url 'post-update' object.id %}" class="btn btn-secondary btn-sm mt-1 mb-1">Update</a>
+                                <a href="{% url 'post-delete' object.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="article-content">
+                 {{object.content|safe}}
+                    </div>
+                    <div class="nav tag-cloud">
+                        {% for category in latest_category %}
+                        <a href="#">{{category}}</a>
+                        {% endfor %}
+                    </div>
+                </article>
+
+                <!-- comment form -->
+                <div class="contact-form article-comment">
+                    <h4>Leave a Comment</h4>
+                    <form id="contact-form" method="POST" action="">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <textarea name="body" id="message" placeholder="Your message *" rows="4" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="send">
+                                    <button type="submit" class="px-btn theme"><span>Submit</span> <i class="arrow"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- end comment form -->
+            </div>
+
+            <div class="col-lg-4 m-15px-tb blog-aside">
+                <!-- Author -->
+                <div class="widget widget-author">
+                    <div class="widget-title">
+                        <h3>Author</h3>
+                    </div>
+                    <div class="widget-body">
+                        <div class="media align-items-center">
+                            <div class="avatar">
+                                <a href="{% url 'profile' object.author %}"><img src="{{object.author.profile.avatar.url}}" title="" alt=""></a>
+                            </div>
+                            <div class="media-body">
+                                <h6>Hello, I'm<br> {{object.author.profile.name}} {% if object.author.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}</h6>
+                            </div>
+                        </div>
+                        <p>{{object.author.profile.bio}}</p>
+                    </div>
+                </div>
+                <!-- End Author -->
+
+                <!--Related posts -->
+                <div class="widget widget-latest-post">
+                    <div class="widget-title">
+                        <h3>Related Posts</h3>
+                    </div>
+                    <div class="widget-body">
+                        {% for post in latest_post %}
+                        {% if post.author == object.author %} 
+                        <div class="latest-post-aside media">
+                            <div class="lpa-left media-body">
+                                <div class="lpa-title">
+                                    <h5><a href="#">{{post.title}}</a></h5>
+                                </div>
+                                <div class="lpa-meta">
+                                    <a class="name" href="#">
+                                        {{post.author}}{% if post.author.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}
+                                    </a>
+                                    <a class="date" href="#">
+                                        {{post.updated}}
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="lpa-right">
+                                <a href="#">
+                                    <img src="{{post.image.url}}" title="" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                </div>
+                <!-- End Related Posts -->
+
+                <!-- comments start -->
+                <h4 class="widget-title ">Comments ({{comment_count}})</h4><br>
+                {% for comment in page %}
+                <div class="body">
+                    <ul class="comment-reply list-unstyled">
+                        <li class="row clearfix">
+                            <div class="icon-box col-md-2 col-4"><a href="{% url 'profile' comment.user %}"><img class="rounded-circle img-fluid img-thumbnail" src="{{comment.user.profile.avatar.url}}" alt="Awesome Image"></div></a>
+                            <div class="text-box col-md-10 col-8 p-l-0 p-r0">
+                                <h5 class="m-b-0">{{comment.user}} {% if comment.user.is_superuser %}<i class="mdi mdi-check-decagram text-info ms-1"></i>{% endif %}</h5>
+                                <p>{{comment.body |truncate_chars:300}} </p>
+                                <ul class="list-inline">
+                                    <li><a href="javascript:void(0);">{{comment.created}}</a></li>
+                                    <li><a href="javascript:void(0);">Reply</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>                                        
+                </div>
+                {% endfor %}
+                <!-- comments end -->
+
+                <!-- Pagination start -->
+                <nav class="blog-pagination" aria-label="Pagination">
+                    {% if page.has_previous %}
+                    <a class="btn btn-outline-primary rounded-pill" href="?page=1" aria-disabled="true">Latest</a>
+                    <a class="btn btn-outline-secondary rounded-pill " href="?page={{page.previous_page_number}}" aria-disabled="true">Previous</a>
+                    {% endif %}
+                    {% if page.has_next %}
+                    <a class="btn btn-outline-primary rounded-pill" href="?page={{page.next_page_number}}" aria-disabled="true">Next</a>
+                    <a class="btn btn-outline-secondary rounded-pill " href="?page={{page.paginator.num_pages}}" aria-disabled="true">Last</a>
+                    {% endif %}
+                </nav>
+                  <!-- Pagination end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
