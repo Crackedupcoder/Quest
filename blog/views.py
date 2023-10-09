@@ -9,7 +9,6 @@ from django.db.models import Q
 from django.http import FileResponse
 from django.contrib.auth.decorators import login_required
 import os
-from docx2pdf import convert
 from django.conf import settings
 from django.http import Http404,HttpResponse
 from django.views import View
